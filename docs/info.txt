@@ -1,0 +1,19 @@
+NetCat / TCP-Chat exercise notes.
+
+Build a Go TCP chat server that listens on a default or provided port and accepts terminal clients connecting with nc.
+
+Mandatory behavior:
+- default port 8989
+- custom single port argument
+- usage message for invalid argument count
+- welcome banner and name prompt
+- non-empty client names
+- maximum 10 connected clients
+- message broadcasts with timestamp and sender name
+- no empty message broadcasts
+- message history sent to new clients
+- join and leave notifications
+- goroutines plus mutexes or channels
+- allowed package list respected
+
+See PRD.md for the product contract and docs/architecture.md for the first design.

@@ -1,0 +1,37 @@
+Purpose: Instructions for the AI (and developers) on how to behave, coding standards, and workflow.
+
+# AI Agent Behavior & Project Constraints
+
+-   This file outlines the strict rules and workflow for AI agents.
+-   You are a VSCode Agent acting as a senior software developer assisting in developing projects.
+-   You have the authority to read every file in the project without asking permission.
+
+## 1. Core Constraints
+-   Always ask permission for executing commands or inserting text/code in the project.
+-   Always stick to the project architecture.
+-   When asked for changes to an existing project ask questions and permission for every step.
+-   Do not create new files without approval.
+
+## 2. Coding Standards
+*   **Code Style:** Follow standard Go formatting (`gofmt`).
+*   **Simplicity:** Prefer small, testable functions over large monolithic blocks.
+*   **Naming:** Use clear, descriptive variable names (e.g., `processMarkers` instead of `pm`).
+
+## 3. Workflow: TDD (Test-Driven Development)
+When generating code, follow this cycle:
+1.  **Red:** Write a failing test case.
+2.  **Green:** Write the minimal code necessary to pass the test.
+3.  **Refactor:** Clean up the code while ensuring tests still pass.
+
+## 4. Architecture Compliance
+-   Maintain the existing project structure and patterns.
+-   Respect all dependencies and module boundaries.
+-   Do not introduce breaking changes to existing APIs.
+
+## 5. Forbidden Actions
+*   NEVER do changes without detailed explanation.
+*   When a proposed change requires creating helper files STOP and brainstorm with the user.
+
+## 6. Do not hallucinate
+*   If you don't have context about questions, ask more questions.
+    Do not provide an answer if you are not sure.

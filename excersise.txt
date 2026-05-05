@@ -1,0 +1,216 @@
+# NetCat / TCP-Chat Exercise Brief
+
+## Objective
+
+Create a simplified NetCat-style TCP group chat in Go.
+
+The program runs in server mode on a specified port, listens for incoming TCP connections, accepts multiple terminal clients, and lets connected users exchange messages in a shared chat.
+
+Clients are expected to connect with the system `nc` command:
+
+```sh
+nc <host> <port>
+```
+
+## Required Behavior
+
+The project must implement:
+
+* TCP connection between one server and multiple clients.
+* A required name prompt for each client.
+* A maximum of 10 simultaneous client connections.
+* Chat messages sent by clients to the shared room.
+* No broadcast for empty client messages.
+* Timestamped and named messages in this format:
+
+```text
+[2020-01-20 15:48:41][client.name]:client.message
+```
+
+* Message history sent to newly connected clients.
+* Join notification sent to existing clients when a client joins.
+* Leave notification sent to remaining clients when a client exits.
+* Broadcast delivery so connected clients receive messages from other clients.
+* Stable remaining connections when one client disconnects.
+* Server-side and client-side error handling.
+
+## CLI Usage
+
+Build the Linux/bash audit binary:
+
+```bash
+go build -o TCPChat .
+```
+
+Run with the default port:
+
+```bash
+./TCPChat
+```
+
+Expected output:
+
+```text
+Listening on the port :8989
+```
+
+Run with a custom port:
+
+```bash
+./TCPChat 2525
+```
+
+Expected output:
+
+```text
+Listening on the port :2525
+```
+
+Invalid usage:
+
+```bash
+./TCPChat 2525 localhost
+```
+
+Expected output:
+
+```text
+[USAGE]: ./TCPChat $port
+```
+
+## Client Welcome Flow
+
+When a client connects, the server must send the welcome message and ask for a name:
+
+```text
+Welcome to TCP-Chat!
+         _nnnn_
+        dGGGGMMb
+       @p~qp~~qMb
+       M|@||@) M|
+       @,----.JM|
+      JS^\__/  qKL
+     dZP        qKRb
+    dZP          qKKb
+   fZP            SMMb
+   HZM            MMMM
+   FqM            MMMM
+ __| ".        |\dS"qML
+ |    `.       | `' \Zq
+_)      \.___.,|     .'
+\____   )MMMMMP|   .'
+     `-'       `--'
+[ENTER YOUR NAME]:
+```
+
+The name must be non-empty after trimming whitespace.
+
+## Example Session
+
+Server:
+
+```bash
+./TCPChat 2525
+```
+
+Client 1:
+
+```bash
+nc localhost 2525
+```
+
+Client 1 enters:
+
+```text
+Yenlik
+hello
+How are you?
+```
+
+Client 2:
+
+```bash
+nc localhost 2525
+```
+
+Client 2 enters:
+
+```text
+Lee
+Hi everyone!
+```
+
+Expected chat behavior:
+
+* Client 2 sees the previous messages from Client 1 after entering a name.
+* Client 1 is told that Lee joined.
+* Client 1 receives Lee's message.
+* Client 2 receives later messages from Client 1.
+* If Lee disconnects, Client 1 is told that Lee left.
+* Client 1 remains connected.
+
+## Technical Requirements
+
+The project must:
+
+* Be written in Go.
+* Start a TCP server.
+* Listen for and accept TCP connections.
+* Use goroutines.
+* Use channels or mutexes.
+* Respect good Go practices.
+* Include tests where practical, especially for server connection behavior and client/chat logic.
+* Handle errors without crashing in normal use.
+
+## Allowed Packages
+
+The mandatory project may use only:
+
+* `io`
+* `log`
+* `os`
+* `fmt`
+* `net`
+* `sync`
+* `time`
+* `bufio`
+* `errors`
+* `strings`
+* `reflect`
+
+## Suggested Implementation Design
+
+Start with a small mandatory version:
+
+* `main` validates CLI arguments and starts the server.
+* A `Server` accepts TCP connections.
+* A `Client` represents one connected user.
+* A `ChatRoom` stores connected clients and message history.
+* Shared room state is protected by `sync.Mutex`.
+* Each client is handled in its own goroutine.
+* Message formatting is isolated in a small function so it can be tested.
+
+## Bonus Ideas
+
+After the mandatory behavior works:
+
+* Let clients change names.
+* Broadcast name changes to the chat group.
+* Support more than one group chat.
+* Implement additional NetCat flags.
+* Add a terminal UI using only `github.com/jroimartin/gocui`.
+* Create server logs.
+* Save logs to a file.
+
+## Learning Goals
+
+This project teaches:
+
+* Go structs.
+* TCP networking.
+* TCP connections and sockets.
+* Goroutines.
+* Channels.
+* Mutexes.
+* IP addresses and ports.
+* Terminal client/server workflows.

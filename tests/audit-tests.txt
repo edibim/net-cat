@@ -1,0 +1,70 @@
+# Manual Audit Test Plan - NetCat / TCP-Chat
+
+Use this file as the first manual verification script once the Go implementation exists.
+
+These tests assume a Linux/bash terminal.
+
+## Build Test
+
+1. Run `go build -o TCPChat .`.
+   * Expect: a local executable named `TCPChat`.
+
+## CLI Tests
+
+1. Run `./TCPChat`.
+   * Expect: `Listening on the port :8989`
+
+2. Run `./TCPChat 2525`.
+   * Expect: `Listening on the port :2525`
+
+3. Run `./TCPChat 2525 localhost`.
+   * Expect: `[USAGE]: ./TCPChat $port`
+
+## Connection Tests
+
+1. Start server in terminal 1: `./TCPChat 2525`
+2. Connect client 1 in terminal 2: `nc localhost 2525`
+3. Connect client 2 in terminal 3: `nc localhost 2525`
+4. Expect both clients to receive:
+   * welcome banner
+   * `[ENTER YOUR NAME]:`
+
+## Chat Tests
+
+1. Client 1 enters `Yenlik`.
+2. Client 1 sends `hello`.
+3. Client 2 enters `Lee`.
+4. Expect Client 2 to receive previous chat history.
+5. Client 2 sends `Hi everyone!`.
+6. Expect Client 1 to receive Lee's formatted message.
+
+Expected format:
+
+```text
+[2020-01-20 15:48:41][client.name]:client.message
+```
+
+## Disconnect Tests
+
+1. Start server with three clients.
+2. Disconnect one client.
+3. Expect remaining clients to stay connected.
+4. Expect remaining clients to receive a leave notification.
+
+## Capacity Test
+
+1. Start server.
+2. Connect 10 clients.
+3. Attempt an 11th connection.
+4. Expect the server to reject or close only the 11th connection while preserving the first 10.
+
+## Code Inspection
+
+Verify:
+
+* Go implementation compiles.
+* Goroutines are used.
+* Mutexes or channels are used.
+* Only allowed packages are used.
+* Errors are handled.
+* Code follows Go formatting and reasonable structure.

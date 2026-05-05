@@ -1,0 +1,105 @@
+# NetCat / TCP-Chat Audit Questions
+
+These audit questions assume a Linux/bash terminal and a binary built with:
+
+```bash
+go build -o TCPChat .
+```
+
+## Functional
+
+1. Run `go build -o TCPChat .`.
+   * Does the project compile and produce a local `TCPChat` executable?
+
+2. Run `./TCPChat`.
+   * Is the server listening for connections on the default port `8989`?
+
+3. Run `./TCPChat 2525 localhost`.
+   * Does the program respond exactly with `[USAGE]: ./TCPChat $port`?
+
+4. Run `./TCPChat 2525`.
+   * Is the server listening for connections on port `2525`?
+
+5. Open three bash terminals:
+   * Terminal 1: `./TCPChat <port>`
+   * Terminal 2: `nc <host ip> <port>`
+   * Terminal 3: `nc <host ip> <port>`
+   * Do both clients connect to the server successfully?
+
+6. Create a server and two clients.
+   * Does each client receive the Linux logo and `[ENTER YOUR NAME]:` prompt?
+
+7. Enter non-empty names for two clients.
+   * Are both names accepted?
+
+8. Create a server and two clients.
+   * Do existing clients receive a message informing them that the new client joined the chat?
+
+9. Create a server and two clients, then send a message from the first client.
+   * Does the second client receive the message?
+
+10. Create a server and one client, send several messages, then create a new client.
+   * Can the new client see all previous chat messages?
+
+11. Create a server and three clients, then send a message using the second client.
+    * Do the first, second, and third clients observe the expected chat state?
+    * Do all other connected clients receive the message?
+
+12. Create a server and use two or three different computers as clients.
+    * Do all clients connect successfully?
+
+13. Create a server and four clients, then disconnect one client.
+    * Do the remaining clients stay connected?
+
+14. Create a server and three clients, then disconnect one client.
+    * Do the remaining clients receive a notification that the client left?
+
+15. Create a server and three clients, then exchange messages.
+    * Are messages identified by timestamp and client name in this format?
+
+```text
+[2020-01-20 15:48:41][client.name]:client.message
+```
+
+16. Send an empty message from a client.
+    * Is the empty message ignored instead of broadcast?
+
+17. Try to connect more than 10 clients.
+    * Does the server enforce the maximum connection quantity?
+
+18. Inspect the implementation.
+    * Are the connections between server and clients properly established with TCP?
+
+19. Inspect the implementation.
+    * Does the project use goroutines?
+
+20. Inspect the implementation.
+    * Does the project use channels or mutexes?
+
+21. Inspect the implementation.
+    * Does the project use only the allowed packages?
+
+22. Overall auditor judgment.
+    * Is this project up to every standard?
+    * If not, why should the project fail?
+
+Failure reasons may include:
+
+* Empty work.
+* Incomplete work.
+* Invalid compilation.
+* Cheating.
+* Crashing.
+* Resource leaks.
+
+## Bonus
+
+1. Can clients change their names?
+2. Is the chat group informed when a client changes name?
+3. Can the server handle multiple separate group chats simultaneously?
+4. Are additional NetCat flags implemented?
+5. Does the server produce logs about client activity?
+6. Are server logs saved into a file?
+7. Does the project provide a terminal UI using only `github.com/jroimartin/gocui`?
+8. Does the code obey good Go practices?
+9. Is there a test file for the code?

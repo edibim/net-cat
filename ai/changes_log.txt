@@ -1,0 +1,152 @@
+# Changes Log
+
+## 2026-05-04
+
+### User Requests
+* Display a timestamp immediately after a user provides their name.
+* Implement flood protection to prevent message spamming.
+
+### Project Changes
+* Updated `client.go` to print a join timestamp `[YYYY-MM-DD HH:MM:SS]` followed by a newline after name entry.
+* Added `lastMessageTime` to `Client` struct and implemented a 500ms cooldown between messages in the message loop.
+
+## 2026-05-04
+
+### User Requests
+* Ensure name change notifications are saved to the chat history.
+
+### Project Changes
+* Updated `BroadcastSystem` in `chatroom.go` to optionally save messages to history with a timestamp.
+* Configured the `/changename` command in `client.go` to persist name change events in the history.
+
+## 2026-05-04
+
+### User Requests
+* Verify /changename command with names containing spaces (e.g., "John Doe").
+
+### Project Changes
+* Added `TestIntegration_ChangeNameWithSpaces` to `integration_test.go` to ensure quoted name parsing and broadcasting work as expected.
+
+## 2026-05-04
+
+### User Requests
+* Change `/nick` to `/changename "name"` and ensure the name is extracted from quotes.
+* Ensure all Bonus features are addressed.
+
+### Project Changes
+* Refactored `handleCommand` in `client.go` to support quoted arguments for name changes.
+* Added `/list` command and corresponding `GetClientNames` helper in `chatroom.go` to provide better visibility of active users.
+
+## 2026-05-04
+
+### User Requests
+* Implement all Bonus features.
+
+### Project Changes
+* Added support for `/nick <name>` and `/help` commands in `client.go`.
+* Implemented system-wide notifications for name changes.
+* Configured the server to log all activity to `chat.log` using `io.MultiWriter`.
+* Refactored server output to use the `log` package for standard timestamping.
+
+## 2026-05-04
+
+### User Requests
+* Remove duplicate messages for the sender.
+
+### Project Changes
+* Modified `BroadcastMessage` in `chatroom.go` to exclude the sender from the broadcast list.
+* Updated `integration_test.go` to remove the expectation of a self-echo for the sender.
+
+## 2026-05-04
+
+### User Requests
+* Implement a 1-minute mute with a timer if a user triggers flood protection 5 times.
+
+### Project Changes
+* Updated `Client` struct in `client.go` to include `floodCount` and `muteUntil`.
+* Modified the message loop in `client.go` to enforce a 1-minute mute after 5 violations and display a remaining time "timer" when muted users attempt to type.
+
+## 2026-05-04
+
+### User Requests
+* Display a timestamped prompt before the user types a message.
+
+### Project Changes
+* Updated `client.go` to display a prompt in the format `[YYYY-MM-DD HH:MM:SS][name]:` at the start of each input cycle in the message loop.
+
+## 2026-05-04
+
+### User Requests
+* Refactor redundant fmt.Fprintln(fmt.Sprintf(...)) calls to use fmt.Fprintf.
+
+### Project Changes
+* Updated `integration_test.go` to use `fmt.Fprintf` instead of the nested `fmt.Fprintln(fmt.Sprintf(...))` pattern for better efficiency.
+
+## 2026-05-03
+
+### User Requests
+* Final stability check of the test suite.
+
+### Project Changes
+* Confirmed all tests (`main_test.go`, `client_test.go`, `integration_test.go`) pass.
+* Synchronized `chatroom.go` to use the atomic `Join` signature required by `client.go`.
+
+## 2026-05-02
+
+### User Requests
+* Requested testing the 10-client limit in the integration test suite.
+* Requested a review of all imports to ensure only allowed packages are used.
+
+### Project Changes
+* Added `TestIntegration_CapacityLimit` to `integration_test.go` to verify rejection of the 11th concurrent user.
+* Verified all imports against the allowed package list; confirmed compliance.
+* Refactored `ChatRoom.Join` to be atomic, fixing a potential race condition in capacity enforcement.
+
+## 2026-05-01
+
+### User Requests
+* Approved proceeding to Milestone 2.
+
+### Project Changes
+* Created `banner.go` with the required TCP-Chat ASCII logo.
+* Created `client.go` with `Client` session logic, name prompting, and validation.
+* Updated `main.go` to handle connections using goroutines and the `Client` struct.
+* Added `client_test.go` to verify name validation logic.
+* Created `chatroom.go` with `ChatRoom` struct for managing clients, history, and broadcasting.
+* Updated `client.go` and `main.go` to integrate the `ChatRoom` logic and message loop.
+* Created `integration_test.go` to verify end-to-end message broadcasting between clients.
+
+## 2026-04-30
+
+### User Requests
+
+* Requested that the project setup be reviewed in full, including the PRD, exercise brief, and audit questions, and that the NetCat exercise design be started from a clear baseline.
+* Requested that the AI folder be reviewed as part of the project context, and that all future user prompts be recorded in `ai/changes_log.txt` in a more professional tone while preserving the original intent and questions.
+* Clarified that `ai/AGENTS.md` defines the expected working process and should guide how the assistant approaches project changes.
+* Requested that all previous prompts be added to `ai/changes_log.txt` in the same professional style, not only prompts from this point forward.
+* Requested that the main implementation phase begin and that the project design be developed into the first concrete Go structure.
+* Requested a complete project design before continuing deeper implementation, so future larger changes can be planned while still satisfying the NetCat exercise requirements.
+* Requested that `README.md` be rewritten with a clear and well-structured project overview.
+* Requested a project-wide Linux/bash alignment so the build, run, test, and audit workflow targets a bash environment.
+* Asked whether the project can be run through bash in the current workspace environment.
+* Asked how to open and test the TCPChat server locally through localhost.
+* Reported that `nc localhost 2525` fails because the `nc` command is not installed in the bash environment.
+* Reported that `sudo apt update` and `sudo apt install netcat-openbsd` fail in the current `MINGW64` Git Bash environment because Windows sudo is disabled and the shell is not an Ubuntu/WSL package environment.
+* Reported that the suggested Windows package install command did not find a matching package in the active package source.
+* Clarified that `README.md` should be app-focused documentation for building and running the project, not an audit report, and that the school target environment is Ubuntu Linux while the current home environment is Windows with bash.
+
+### Project Changes
+
+* Established NetCat / TCP-Chat planning baseline.
+* Rewrote `PRD.md` from the previous template into a project-specific product contract.
+* Normalized the exercise brief in `excersise.txt`.
+* Converted `audit-questions.txt` into a structured audit checklist.
+* Added first architecture design in `docs/architecture.md`.
+* Updated project context and info notes for future implementation work.
+* Created the initial Go module in `go.mod`.
+* Added `main.go` with CLI argument parsing and TCP listener startup.
+* Added `main_test.go` to cover the default port, custom port, and invalid extra-argument behavior.
+* Ran `go test ./...` successfully after allowing Go build-cache access.
+* Updated documentation to prefer Linux/bash commands, especially `go build -o TCPChat .` followed by `./TCPChat`.
+* Checked for a local `bash` command from the current shell; it was not available in the active environment path.
+* Rewrote `README.md` as application setup and usage documentation, including Ubuntu install commands, Windows Git Bash limitations, WSL guidance, build/run/test commands, and the current implementation state.
