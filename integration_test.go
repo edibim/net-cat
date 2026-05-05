@@ -43,6 +43,9 @@ func TestIntegration_Broadcasting(t *testing.T) {
 	consumeUntil(t, reader1, NamePrompt)
 	fmt.Fprintln(conn1, "Alice")
 
+	// Consume Alice's timestamp and join message
+	consumeUntil(t, reader1, "Alice has joined our chat...")
+
 	// 3. Connect Bob
 	conn2, err := net.Dial("tcp", addr)
 	if err != nil {
@@ -52,6 +55,9 @@ func TestIntegration_Broadcasting(t *testing.T) {
 	reader2 := bufio.NewReader(conn2)
 	consumeUntil(t, reader2, NamePrompt)
 	fmt.Fprintln(conn2, "Bob")
+
+	// Consume Bob's timestamp and join message
+	consumeUntil(t, reader2, "Bob has joined our chat...")
 
 	// Alice should see Bob join (BroadcastSystem excludes sender)
 	line, _ := reader1.ReadString('\n')

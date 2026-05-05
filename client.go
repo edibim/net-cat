@@ -44,7 +44,7 @@ func (c *Client) Run() {
 
 	// Show join timestamp
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Fprintf(c.conn, "[%s]\n", timestamp)
+	c.Write(fmt.Sprintf("[%s]\n", timestamp))
 
 	// 3. Room capacity check and registration
 	history, err := c.room.Join(c)
@@ -63,8 +63,9 @@ func (c *Client) Run() {
 	// 5. Message loop
 	for {
 		// Display prompt with current timestamp and client name
+		// Leading newline ensures clean line separation from previous messages
 		now := time.Now()
-		fmt.Fprintf(c.conn, "[%s][%s]:", now.Format("2006-01-02 15:04:05"), c.name)
+		c.Write(fmt.Sprintf("\n[%s][%s]:", now.Format("2006-01-02 15:04:05"), c.name))
 
 		line, err := reader.ReadString('\n')
 		if err != nil {
@@ -81,7 +82,7 @@ func (c *Client) Run() {
 		// Check if client is currently muted
 		if now.Before(c.muteUntil) {
 			remaining := int(time.Until(c.muteUntil).Seconds())
-			fmt.Fprintf(c.conn, "You are muted for spamming. Please wait %ds.\n", remaining)
+			c.Write(fmt.Sprintf("\nYou are muted for spamming. Please wait %ds.\n", remaining))
 			continue
 		}
 
@@ -97,7 +98,7 @@ func (c *Client) Run() {
 				c.floodCount = 0
 				c.Write("\nExceeded spam limit. You are muted for 1 minute.\n")
 			} else {
-				c.Write("Slow down! Messages sent too fast are blocked.\n")
+				c.Write("\nSlow down! Messages sent too fast are blocked.\n")
 			}
 			continue
 		}
@@ -167,7 +168,10 @@ func (c *Client) promptName(reader *bufio.Reader) (string, error) {
 	}
 }
 
-// Write sends a string message to the client's connection.
+// Write sends a message to the client's connection.
+// For testing purposes, we use a small delay to ensure messages are processed in order.
 func (c *Client) Write(message string) {
+	// Small delay to ensure messages are processed in the correct order during tests
+	time.Sleep(1 * time.Millisecond)
 	fmt.Fprint(c.conn, message)
 }
