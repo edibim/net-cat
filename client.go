@@ -43,10 +43,6 @@ func (c *Client) Run() {
 	}
 	c.name = name
 
-	// Show join timestamp
-	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	c.Write(fmt.Sprintf("[%s]\n", timestamp))
-
 	// 3. Room capacity check and registration
 	history, err := c.room.Join(c)
 	if err != nil {

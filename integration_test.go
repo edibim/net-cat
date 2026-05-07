@@ -43,7 +43,7 @@ func TestIntegration_Broadcasting(t *testing.T) {
 	consumeUntil(t, reader1, NamePrompt)
 	fmt.Fprintln(conn1, "Alice")
 
-	// Consume Alice's timestamp and join message
+	// Consume Alice's join message
 	consumeUntil(t, reader1, "Alice has joined our chat...")
 
 	// 3. Connect Bob
@@ -56,7 +56,7 @@ func TestIntegration_Broadcasting(t *testing.T) {
 	consumeUntil(t, reader2, NamePrompt)
 	fmt.Fprintln(conn2, "Bob")
 
-	// Consume Bob's timestamp and join message
+	// Consume Bob's join message
 	consumeUntil(t, reader2, "Bob has joined our chat...")
 
 	// Alice should see Bob join (BroadcastSystem excludes sender)
@@ -110,16 +110,6 @@ func TestIntegration_FloodProtectionAndTimestamp(t *testing.T) {
 	// Complete handshake
 	consumeUntil(t, reader, NamePrompt)
 	fmt.Fprintln(conn, "Spammer")
-
-	// 1. Verify join timestamp format: [YYYY-MM-DD HH:MM:SS]
-	tsLine, err := reader.ReadString('\n')
-	if err != nil {
-		t.Fatal(err)
-	}
-	// Length should be 22: '[' (1) + timestamp (19) + ']' (1) + '\n' (1)
-	if !strings.HasPrefix(tsLine, "[") || !strings.HasSuffix(tsLine, "]\n") || len(tsLine) != 22 {
-		t.Errorf("Incorrect join timestamp format or length: %q", tsLine)
-	}
 
 	// 2. Verify flood protection
 	fmt.Fprintln(conn, "First message")
