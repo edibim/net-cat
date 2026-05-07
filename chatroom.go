@@ -72,19 +72,16 @@ func (r *ChatRoom) BroadcastMessage(sender *Client, text string) {
 
 // BroadcastSystem sends a system event message to clients.
 func (r *ChatRoom) BroadcastSystem(text string, except *Client) {
-	timestamp := time.Now().Format("2006-01-02 15:04:05")
-	formatted := fmt.Sprintf("[%s] %s", timestamp, text)
-
 	r.mu.Lock()
-	r.history = append(r.history, formatted)
+	r.history = append(r.history, text)
 	targets := r.copyClients()
 	r.mu.Unlock()
 
-	log.Println("System Message:", formatted)
+	log.Println("System Message:", text)
 
 	for _, c := range targets {
 		if c != except {
-			c.WriteWithPrompt(formatted)
+			c.WriteWithPrompt(text)
 		}
 	}
 }
