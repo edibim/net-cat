@@ -14,14 +14,16 @@ type ChatRoom struct {
 	clients map[*Client]bool
 	history []string
 	limit   int
+	name    string
 }
 
 // NewChatRoom initializes a new chat room with a specific capacity.
-func NewChatRoom(limit int) *ChatRoom {
+func NewChatRoom(name string, limit int) *ChatRoom {
 	return &ChatRoom{
 		clients: make(map[*Client]bool),
 		history: make([]string, 0),
 		limit:   limit,
+		name:    name,
 	}
 }
 

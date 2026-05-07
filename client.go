@@ -137,9 +137,34 @@ func (c *Client) handleCommand(text string) {
 		c.room.BroadcastSystem(fmt.Sprintf("%s is now known as %s", oldName, newName), c)
 	case "/list":
 		names := c.room.GetClientNames()
-		c.Write("Connected users: " + strings.Join(names, ", ") + "\n")
+		c.Write(fmt.Sprintf("Users in [%s]: %s\n", c.room.name, strings.Join(names, ", ")))
+	case "/rooms":
+		roomsMu.Lock()
+		var list []string
+		for name := range rooms {
+			list = append(list, name)
+		}
+		roomsMu.Unlock()
+		c.Write("Available rooms: " + strings.Join(list, ", ") + "\n")
+	case "/join":
+		target := strings.TrimSpace(strings.TrimPrefix(text, "/join"))
+		if target == "" {
+			c.Write("Usage: /join room_name\n")
+			return
+		}
+		oldRoom := c.room
+		oldRoom.Leave(c)
+		oldRoom.BroadcastSystem(fmt.Sprintf("%s has left the room.", c.name), c)
+
+		c.room = GetOrCreateRoom(target)
+		c.Write(fmt.Sprintf("You have joined the room: [%s]\n", target))
+		history, _ := c.room.Join(c)
+		for _, msg := range history {
+			c.Write(msg + "\n")
+		}
+		c.room.BroadcastSystem(fmt.Sprintf("%s has joined [%s]", c.name, target), c)
 	case "/help":
-		c.Write("Available commands: /changename \"name\", /list, /help\n")
+		c.Write("Commands: /changename \"name\", /list, /rooms, /join <name>, /help\n")
 	default:
 		c.Write(fmt.Sprintf("Unknown command: %s. Type /help for a list of commands.\n", cmd))
 	}

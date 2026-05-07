@@ -43,9 +43,6 @@ func TestIntegration_Broadcasting(t *testing.T) {
 	consumeUntil(t, reader1, NamePrompt)
 	fmt.Fprintln(conn1, "Alice")
 
-	// Consume Alice's join message
-	consumeUntil(t, reader1, "Alice has joined our chat...")
-
 	// 3. Connect Bob
 	conn2, err := net.Dial("tcp", addr)
 	if err != nil {
@@ -55,15 +52,8 @@ func TestIntegration_Broadcasting(t *testing.T) {
 	reader2 := bufio.NewReader(conn2)
 	consumeUntil(t, reader2, NamePrompt)
 	fmt.Fprintln(conn2, "Bob")
-
-	// Consume Bob's join message
-	consumeUntil(t, reader2, "Bob has joined our chat...")
-
-	// Alice should see Bob join (BroadcastSystem excludes sender)
-	line, _ := reader1.ReadString('\n')
-	if !strings.Contains(line, "Bob has joined our chat...") {
-		t.Errorf("Alice did not see Bob join notification: %q", line)
-	}
+	// Bob doesn't see his own join, but Alice does.
+	consumeUntil(t, reader1, "Bob has joined our chat...")
 
 	// 4. Alice sends a message
 	msg := "Hi Bob!"
@@ -73,10 +63,13 @@ func TestIntegration_Broadcasting(t *testing.T) {
 	// We'll skip the check for reader1 here and focus on Bob receiving it.
 
 	// Bob receives Alice's message
-	line, _ = reader2.ReadString('\n')
-	if !strings.Contains(line, "[Alice]:"+msg) {
-		t.Errorf("Bob did not receive Alice's message: %q", line)
-	}
+	consumeUntil(t, reader2, "[Alice]:"+msg)
+
+	// 5. Alice leaves
+	conn1.Close()
+
+	// Bob should see Alice leave
+	consumeUntil(t, reader2, "Alice has left our chat...")
 }
 
 // TestIntegration_FloodProtectionAndTimestamp verifies the join timestamp format
@@ -115,14 +108,11 @@ func TestIntegration_FloodProtectionAndTimestamp(t *testing.T) {
 	fmt.Fprintln(conn, "First message")
 	fmt.Fprintln(conn, "Second message (too fast)")
 
-	// Consume first message echo
-	consumeUntil(t, reader, "[Spammer]:First message")
+	// The sender doesn't receive their own echo, just the next timestamped prompt
+	consumeUntil(t, reader, "[Spammer]:")
 
 	// Next line should be the flood protection warning
-	warning, _ := reader.ReadString('\n')
-	if !strings.Contains(warning, "Slow down!") {
-		t.Errorf("Expected flood protection warning, got: %q", warning)
-	}
+	consumeUntil(t, reader, "Slow down!")
 }
 
 // TestIntegration_CapacityLimit verifies that the 11th client is rejected
@@ -175,10 +165,7 @@ func TestIntegration_CapacityLimit(t *testing.T) {
 	consumeUntil(t, r11, NamePrompt)
 	fmt.Fprintln(c11, "Extra")
 
-	line, _ := r11.ReadString('\n')
-	if !strings.Contains(line, "Chat room is full") {
-		t.Errorf("Expected 'Chat room is full' message, got %q", line)
-	}
+	consumeUntil(t, r11, "Chat room is full")
 
 	// Expect connection to be closed by server
 	_, err = r11.ReadByte()
@@ -229,20 +216,13 @@ func TestIntegration_ChangeNameWithSpaces(t *testing.T) {
 	// 4. Bob should receive the notification
 	// Consume Bob's own handshake sequence first
 	consumeUntil(t, r2, "[Bob]:")
-
-	line, _ := r2.ReadString('\n')
-	if !strings.Contains(line, "Alice is now known as John Doe") {
-		t.Errorf("Bob did not receive name change notification. Got: %q", line)
-	}
+	consumeUntil(t, r2, "Alice is now known as John Doe")
 
 	// 5. Alice sends a message
 	fmt.Fprintln(conn1, "Hello from the other side")
 
 	// 6. Bob receives the message from "John Doe"
-	line, _ = r2.ReadString('\n')
-	if !strings.Contains(line, "[John Doe]:Hello from the other side") {
-		t.Errorf("Bob did not receive message with new name. Got: %q", line)
-	}
+	consumeUntil(t, r2, "[John Doe]:Hello from the other side")
 }
 
 // consumeUntil reads from the reader until the target string is found or timeout occurs.

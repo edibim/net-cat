@@ -123,6 +123,16 @@ Run all Go tests:
 go test ./...
 ```
 
+## Commands
+
+While connected, you can use the following commands:
+
+* `/changename "new_name"`: Changes your display name (requires quotes).
+* `/list`: Lists all users in your current room.
+* `/rooms`: Lists all active chat rooms.
+* `/join <room_name>`: Switches to a different room (creates it if it doesn't exist).
+* `/help`: Displays available commands.
+
 ## Required Final Chat Behavior
 
 When the implementation is complete, the app must support:

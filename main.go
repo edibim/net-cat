@@ -6,12 +6,29 @@ import (
 	"log"
 	"net"
 	"os"
+	"sync"
 )
 
 const (
 	defaultPort  = "8989"
 	usageMessage = "[USAGE]: ./TCPChat $port"
 )
+
+var (
+	rooms   = make(map[string]*ChatRoom)
+	roomsMu sync.Mutex
+)
+
+func GetOrCreateRoom(name string) *ChatRoom {
+	roomsMu.Lock()
+	defer roomsMu.Unlock()
+	if r, ok := rooms[name]; ok {
+		return r
+	}
+	r := NewChatRoom(name, 10)
+	rooms[name] = r
+	return r
+}
 
 func main() {
 	port, err := parsePort(os.Args[1:])
@@ -37,7 +54,14 @@ func main() {
 
 	log.Printf("Listening on the port :%s\n", port)
 
-	room := NewChatRoom(10)
+	// Pre-initialize 10 specific rooms requested
+	roomNames := []string{"main room", "lobby", "advertise room", "gaming", "news", "music", "tech", "random", "help", "staff"}
+	for _, name := range roomNames {
+		GetOrCreateRoom(name)
+	}
+
+	// Default entry room (matches the first in our standard list)
+	room := GetOrCreateRoom("main room")
 
 	for {
 		conn, err := listener.Accept()
