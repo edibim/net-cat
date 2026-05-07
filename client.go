@@ -17,6 +17,7 @@ type Client struct {
 	lastMessageTime time.Time
 	floodCount      int
 	muteUntil       time.Time
+	isReady         bool // tracks if the prompt is currently displayed
 }
 
 // NewClient initializes a new client session.
@@ -58,16 +59,14 @@ func (c *Client) Run() {
 	for _, msg := range history {
 		c.Write(msg + "\n")
 	}
-	c.room.BroadcastSystem(fmt.Sprintf("%s has joined our chat...", c.name), c, false)
+	c.room.BroadcastSystem(fmt.Sprintf("%s has joined our chat...", c.name), c)
 
 	// 5. Message loop
 	for {
-		// Display prompt with current timestamp and client name
-		// Leading newline ensures clean line separation from previous messages
-		now := time.Now()
-		c.Write(fmt.Sprintf("\n[%s][%s]:", now.Format("2006-01-02 15:04:05"), c.name))
+		c.ReprintPrompt()
 
 		line, err := reader.ReadString('\n')
+		c.isReady = false // User submitted the line, prompt is gone
 		if err != nil {
 			break // Connection lost
 		}
@@ -77,12 +76,12 @@ func (c *Client) Run() {
 			continue
 		}
 
-		now = time.Now()
+		now := time.Now()
 
 		// Check if client is currently muted
 		if now.Before(c.muteUntil) {
 			remaining := int(time.Until(c.muteUntil).Seconds())
-			c.Write(fmt.Sprintf("\nYou are muted for spamming. Please wait %ds.\n", remaining))
+			c.Write(fmt.Sprintf("You are muted for spamming. Please wait %ds.\n", remaining))
 			continue
 		}
 
@@ -96,9 +95,9 @@ func (c *Client) Run() {
 			if c.floodCount >= 5 {
 				c.muteUntil = now.Add(time.Minute)
 				c.floodCount = 0
-				c.Write("\nExceeded spam limit. You are muted for 1 minute.\n")
+				c.Write("Exceeded spam limit. You are muted for 1 minute.\n")
 			} else {
-				c.Write("\nSlow down! Messages sent too fast are blocked.\n")
+				c.Write("Slow down! Messages sent too fast are blocked.\n")
 			}
 			continue
 		}
@@ -114,7 +113,7 @@ func (c *Client) Run() {
 	}
 
 	// 6. Leave notification (handled by defer Leave which follows)
-	c.room.BroadcastSystem(fmt.Sprintf("%s has left our chat...", c.name), c, false)
+	c.room.BroadcastSystem(fmt.Sprintf("%s has left our chat...", c.name), c)
 }
 
 // handleCommand processes slash commands like /nick or /help.
@@ -139,7 +138,7 @@ func (c *Client) handleCommand(text string) {
 		oldName := c.name
 		c.name = newName
 		log.Printf("Name change: %s -> %s", oldName, newName)
-		c.room.BroadcastSystem(fmt.Sprintf("%s is now known as %s", oldName, newName), c, true)
+		c.room.BroadcastSystem(fmt.Sprintf("%s is now known as %s", oldName, newName), c)
 	case "/list":
 		names := c.room.GetClientNames()
 		c.Write("Connected users: " + strings.Join(names, ", ") + "\n")
@@ -174,4 +173,21 @@ func (c *Client) Write(message string) {
 	// Small delay to ensure messages are processed in the correct order during tests
 	time.Sleep(1 * time.Millisecond)
 	fmt.Fprint(c.conn, message)
+}
+
+// ReprintPrompt displays the chat prompt and sets the ready flag.
+func (c *Client) ReprintPrompt() {
+	now := time.Now()
+	c.isReady = true
+	c.Write(fmt.Sprintf("[%s][%s]:", now.Format("2006-01-02 15:04:05"), c.name))
+}
+
+// WriteWithPrompt writes a message. If a prompt was already there, it moves to a new line and restores the prompt.
+func (c *Client) WriteWithPrompt(msg string) {
+	if c.isReady {
+		c.Write("\n" + msg + "\n")
+		c.ReprintPrompt()
+	} else {
+		c.Write(msg + "\n")
+	}
 }

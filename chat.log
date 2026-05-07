@@ -25,3 +25,74 @@
 2026/05/04 15:37:02 Listening on the port :2525
 2026/05/04 15:37:38 Listening on the port :2525
 2026/05/04 15:38:52 Listening on the port :2525
+2026/05/07 11:49:45 Listening on the port :8989
+2026/05/07 11:50:06 Client joined: Rop ([::1]:34706)
+2026/05/07 11:50:06 System Message: 
+Rop has joined our chat...
+
+2026/05/07 11:50:11 Broadcast: [2026-05-07 11:50:11][Rop]:eee
+2026/05/07 12:10:59 System Message: 
+Rop has left our chat...
+
+2026/05/07 12:10:59 Client left: Rop ([::1]:34706)
+2026/05/07 12:11:09 Listening on the port :8989
+2026/05/07 12:11:24 Client joined: rico ([::1]:35738)
+2026/05/07 12:11:24 System Message: rico has joined our chat...
+
+2026/05/07 12:11:27 Broadcast: [2026-05-07 12:11:27][rico]:ela pou sai
+2026/05/07 12:11:30 Broadcast: [2026-05-07 12:11:30][rico]:ti leei
+2026/05/07 12:11:44 Client joined: toyboy ([::1]:57942)
+2026/05/07 12:11:44 System Message: toyboy has joined our chat...
+
+2026/05/07 12:11:56 System Message: rico has left our chat...
+
+2026/05/07 12:11:56 Client left: rico ([::1]:35738)
+2026/05/07 12:12:04 Broadcast: [2026-05-07 12:12:04][toyboy]:ss
+2026/05/07 12:12:05 System Message: toyboy has left our chat...
+
+2026/05/07 12:12:05 Client left: toyboy ([::1]:57942)
+2026/05/07 12:12:14 Client joined: rico ([::1]:53576)
+2026/05/07 12:12:14 System Message: rico has joined our chat...
+
+2026/05/07 12:12:15 Broadcast: [2026-05-07 12:12:15][rico]:ela
+2026/05/07 12:12:17 Broadcast: [2026-05-07 12:12:17][rico]:pou sai
+2026/05/07 12:12:26 Name change: rico -> topbb
+2026/05/07 12:12:26 System Message: [2026-05-07 12:12:26] rico is now known as topbb
+
+2026/05/07 12:12:37 Client joined: sss ([::1]:54714)
+2026/05/07 12:12:37 System Message: sss has joined our chat...
+
+2026/05/07 12:12:46 Broadcast: [2026-05-07 12:12:46][sss]:ela
+2026/05/07 12:12:51 Name change: sss -> eee
+2026/05/07 12:12:51 System Message: [2026-05-07 12:12:51] sss is now known as eee
+
+2026/05/07 12:12:53 Broadcast: [2026-05-07 12:12:53][eee]:sasa
+2026/05/07 12:14:36 System Message: topbb has left our chat...
+
+2026/05/07 12:14:36 Client left: topbb ([::1]:53576)
+2026/05/07 12:14:39 System Message: eee has left our chat...
+
+2026/05/07 12:14:39 Client left: eee ([::1]:54714)
+2026/05/07 12:14:47 Listening on the port :8989
+2026/05/07 12:14:55 Client joined: MArio ([::1]:34790)
+2026/05/07 12:14:55 System Message: MArio has joined our chat...
+2026/05/07 12:15:01 Client joined: rico ([::1]:40428)
+2026/05/07 12:15:01 System Message: rico has joined our chat...
+2026/05/07 12:15:10 Broadcast: [2026-05-07 12:15:10][MArio]:sasa
+2026/05/07 12:15:13 Broadcast: [2026-05-07 12:15:13][MArio]:sasasa
+2026/05/07 12:23:03 System Message: MArio has left our chat...
+2026/05/07 12:23:03 Client left: MArio ([::1]:34790)
+2026/05/07 12:23:05 System Message: rico has left our chat...
+2026/05/07 12:23:05 Client left: rico ([::1]:40428)
+2026/05/07 12:23:11 Listening on the port :8989
+2026/05/07 12:23:17 Client joined: sss ([::1]:41896)
+2026/05/07 12:23:17 System Message: [2026-05-07 12:23:17] sss has joined our chat...
+2026/05/07 12:23:20 Broadcast: [2026-05-07 12:23:20][sss]:WElcome
+2026/05/07 12:23:26 Client joined: xxx ([::1]:38692)
+2026/05/07 12:23:26 System Message: [2026-05-07 12:23:26] xxx has joined our chat...
+2026/05/07 12:23:37 Name change: xxx -> rico
+2026/05/07 12:23:37 System Message: [2026-05-07 12:23:37] xxx is now known as rico
+2026/05/07 12:23:48 System Message: [2026-05-07 12:23:48] sss has left our chat...
+2026/05/07 12:23:48 Client left: sss ([::1]:41896)
+2026/05/07 12:23:49 System Message: [2026-05-07 12:23:49] rico has left our chat...
+2026/05/07 12:23:49 Client left: rico ([::1]:38692)
